@@ -1,0 +1,1 @@
+Used Gemini to assist in cleaning up code and writing HTML 
