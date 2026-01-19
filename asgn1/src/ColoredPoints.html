@@ -1,0 +1,87 @@
+<!-- Deniz Yaralioglu
+ dyaralio@ucsc.edu
+ Notes on what changes I made for awesomeness in the readme file-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Change a point color</title>
+    <style>
+      body {
+        background-image: url('https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=pexels-padrinan-255379.jpg&fm=jpg');
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+        border: 2px solid #333;
+      }
+      .controls {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .controls label, .controls input, .controls button {
+        margin: 5px;
+      }
+      img {
+        display: block;
+        margin: 20px auto;
+        max-width: 300px;
+        border: 2px solid #333;
+      }
+    </style>
+  </head>
+
+  <body onload="main()">
+    <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <div class="controls">
+      <div id="coordinates">Coordinates: </div>
+      <br>
+      <button id="point">Point</button>
+      <button id="triangle">Triangle</button>
+      <button id="circle">Circle</button>
+      <button id="drawPicture">Draw Picture</button>
+      <br>
+      <label for="segments">Segments:</label>
+      <input type="range" id="segments" min="3" max="50" step="1" value="12">
+      <br>
+      <label for="red">Red:</label>
+      <input type="range" id="red" min="0" max="1" step="0.01" value="1.0">
+      <br>
+      <label for="green">Green:</label>
+      <input type="range" id="green" min="0" max="1" step="0.01" value="0.0">
+      <br>
+      <label for="blue">Blue:</label>
+      <input type="range" id="blue" min="0" max="1" step="0.01" value="0.0">
+      <br>
+      <label for="size">Size:</label>
+      <input type="range" id="size" min="1" max="50" step="1" value="10">
+      <br>
+      <label for="alpha">Alpha:</label>
+      <input type="range" id="alpha" min="0" max="1" step="0.01" value="1.0">
+      <br>
+      <button id="clear">Clear</button>
+    </div>
+    <img src="IMG_1252.jpeg" alt="reference image" />
+    <p>Used github copilot for code refactoring and functionality for triangle/circle drawing
+
+My initials (DY are on the roof of the house)
+
+The "Awesomeness" additions I made were:
+1. Adding an alpha slider that changes the opacity of the new shapes
+2. Adding a coordinate display under the canvas that tells the user what the exact coordinates of their mouse are when hovering over the canvas
+3. Added a background image to make the website look better
+4. Centered canvas and controls so the website looks better and is easier to use</p>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="Point.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Circle.js"></script>
+    <script src="ColoredPoints.js"></script>
+  </body>
+</html>
