@@ -65,7 +65,6 @@ function main() {
 
   canvas.onmousedown = function(ev) { click(ev); };
   canvas.onmousemove = function(ev) {
-    updateCoordinates(ev);
     if (ev.buttons === 1) { // If left button is pressed
       updateMouseRotation(ev);
       click(ev);
@@ -142,20 +141,6 @@ function connectVariablesToGLSL() {
   gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
 }
 
-/**
- * updateCoordinates(ev)
- * Updates the displayed coordinates based on mouse position.
- */
-function updateCoordinates(ev) {
-  let x = ev.clientX;
-  let y = ev.clientY;
-  let rect = ev.target.getBoundingClientRect();
-
-  x = ((x - rect.left) - canvas.width/2) / (canvas.width/2);
-  y = (canvas.height/2 - (y - rect.top)) / (canvas.height/2);
-
-  document.getElementById('coordinates').innerHTML = 'Coordinates: (' + x.toFixed(2) + ', ' + y.toFixed(2) + ')';
-}
 
 /**
  * updateMouseRotation(ev)
