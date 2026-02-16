@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Change a point color</title>
+    <style>
+      body {
+        background-image: url('https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=pexels-padrinan-255379.jpg&fm=jpg');
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+        border: 2px solid #333;
+      }
+      .controls {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .controls label, .controls input, .controls button {
+        margin: 5px;
+      }
+      img {
+        display: block;
+        margin: 20px auto;
+        max-width: 300px;
+        border: 2px solid #333;
+      }
+    </style>
+  </head>
+
+  <body onload="main()">
+    <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <div class="controls">
+      <label for="Body Angle">Body Angle (1st Level):</label>
+      <input type="range" id="bodySlide" min="-180" max="180" value="0">
+      Animation:
+      <button type="button" id="animationOnBody">ON</button>
+      <button type="button" id="animationOffBody">OFF</button>
+      <br>
+      <label for="Head Angle">Head Angle (2nd Level):</label>
+      <input type="range" id="headSlide" min="-180" max="180" value="20">
+      Animation:
+      <button type="button" id="animationOnHead">ON</button>
+      <button type="button" id="animationOffHead">OFF</button>
+      <br>
+      <label for="Flipper Angle">Flipper Angle (2nd Level):</label>
+      <input type="range" id="flipperSlide" min="-180" max="180" value="0">
+      Animation:
+      <button type="button" id="animationOnFlipper">ON</button>
+      <button type="button" id="animationOffFlipper">OFF</button>
+      <br>
+      <label for="Mouth Scale">Mouth Scale (3rd Level):</label>
+      <input type="range" id="mouthScaleSlide" min="-3" max="3" value="1">
+      Animation:
+      <button type="button" id="animationOnMouth">ON</button>
+      <button type="button" id="animationOffMouth">OFF</button>
+      <br>
+    </div>
+    <p>Deniz Yaralioglu<br>dyaralio<br>Implemented block add/delete, however it does not take into account rotation of camera, so it only works for the block in front of you.
+    <br>Implemented procedurally generated terrain as my "wow" feature, it creates mountains and valleys consistent with their surroundings similar to early minecraft generation. Taller blocks have a different texture, showing that I have implemented a second texture. This secondary texture can also be seen on the ground plane.
+    <br>My simple game is a yellow cube that moves around the world in a circle, traversing the terrain by always staying on top of it. When the player makes contact with the yellow cube, the game ends as seen by console print and color change.
+    <br>However, the hitbox for this is not perfect, I think due to the fov, the actual location of the camera is a bit in front of where the viewport is.
+    <br>Used github copilot to assist in this assignment</p>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="../../asgn0/lib/cuon-matrix-cse160.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Cone.js"></script>
+    <script src="Cube.js"></script>
+    <script src="world.js"></script>
+  </body>
+</html>
