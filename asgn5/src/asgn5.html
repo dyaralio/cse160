@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three.js Perspective Orbit</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #c { width: 100vw; height: 80vh; display: block; }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.183.2/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.2/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <p>Deniz Yaralioglu<br>
+    dyaralio@ucsc.edu<br>
+    <br>
+    Notes to Grader:<br>
+    Extra features are randomly generated scene, moving light scource, multiple material types creating interesting reflections<br>
+    Used Gemini to assist with coding
+  </p>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+    function main() {
+      const canvas = document.querySelector('#c');
+      const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x111111);
+
+      // --- PERSPECTIVE CAMERA ---
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(3, 3, 5);
+
+      // --- ORBIT CONTROLS ---
+      const controls = new OrbitControls(camera, canvas);
+      controls.enableDamping = true; 
+
+      // Visual Aids
+      const gridHelper = new THREE.GridHelper(10, 10);
+      scene.add(gridHelper);
+
+      // Lighting
+      const light = new THREE.DirectionalLight(0xFFFFFF, 0.5);
+      light.position.set(-1, 2, 4);
+      scene.add(light);
+
+      // Loaders (Reusing for efficiency)
+      const textureLoader = new THREE.TextureLoader();
+      const gltfLoader = new GLTFLoader();
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+      gltfLoader.setDRACOLoader(dracoLoader);
+
+      // --- LIGHT 1: DIRECTIONAL LIGHT (The Sun) ---
+      const dirLight = new THREE.DirectionalLight(0xFFFFFF, 2);
+      dirLight.position.set(-2, 5, 2);
+      scene.add(dirLight);
+      // Helper: Square plane showing direction
+      const dirHelper = new THREE.DirectionalLightHelper(dirLight, 1);
+      scene.add(dirHelper);
+
+      // --- LIGHT 2: POINT LIGHT (The Lightbulb) ---
+      const pointLight = new THREE.PointLight(0xFF0000, 150, 20); // Red color
+      pointLight.position.set(3, 2, 2);
+      scene.add(pointLight);
+      // Helper: Diamond shape showing position
+      const pointHelper = new THREE.PointLightHelper(pointLight, 0.5);
+      scene.add(pointHelper);
+
+      // --- LIGHT 3: SPOT LIGHT (The Flashlight) ---
+      const spotLight = new THREE.SpotLight(0x0000FF, 10); // Blue color
+      spotLight.position.set(-4, 4, -4);
+      spotLight.angle = Math.PI / 6; // Cone width
+      scene.add(spotLight);
+      // Helper: Cone shape showing beam
+      const spotHelper = new THREE.SpotLightHelper(spotLight);
+      scene.add(spotHelper);
+
+      const texture = textureLoader.load(
+        '../resources/image_5056e-Milky-Ways-Center.jpg',
+        (tex) => {
+          // This tells Three.js the image is a 360 wrap-around
+          tex.mapping = THREE.EquirectangularReflectionMapping;
+          tex.colorSpace = THREE.SRGBColorSpace;
+          
+          scene.background = tex;  // This shows the image in the background
+          scene.environment = tex; // This makes objects reflect the bridge colors!
+        }
+      );
+
+
+      function makeInstance(geometry, color, x, y) {
+        let material;
+        if (color === -1) {
+          const texture = textureLoader.load('../resources/wall.jpg');
+          texture.colorSpace = THREE.SRGBColorSpace;
+          material = new THREE.MeshBasicMaterial({ map: texture });
+        } else {
+          material = new THREE.MeshPhongMaterial({ color });
+        }
+        const cube = new THREE.Mesh(geometry, material);
+        cube.position.x = x;
+        cube.position.y = y; // Sit on the grid
+        scene.add(cube);
+        return cube;
+      }
+
+      async function loadGlb() {
+        try {
+          const gltf = await gltfLoader.loadAsync('../resources/charizar.glb');
+          scene.add(gltf.scene);
+        } catch (e) { console.warn("Model not found, skipping."); }
+      }
+
+      const geometry = new THREE.BoxGeometry(1, 1, 1);
+      const cubes = [
+        makeInstance(geometry, -1, 0, 2),
+        makeInstance(geometry, 0x8844aa, -2, 0.5),
+        makeInstance(geometry, 0xaa8844, 2, 0.5),
+      ];
+
+      const primitives = [];
+      const geometries = [
+        new THREE.SphereGeometry(0.5, 32, 32),
+        new THREE.ConeGeometry(0.5, 1, 32),
+        new THREE.CylinderGeometry(0.3, 0.3, 1, 32),
+        new THREE.TorusGeometry(0.4, 0.15, 16, 100)
+      ];
+
+      for (let i = 0; i < 20; i++) {
+        const shapeIdx = Math.floor(Math.random() * geometries.length);
+        const color = Math.random() * 0xffffff;
+        
+        // standard material to react to the skybox environment
+        const material = new THREE.MeshStandardMaterial({ 
+          color: color,
+          roughness: 0.1,
+          metalness: 0.5
+        });
+
+        const mesh = new THREE.Mesh(geometries[shapeIdx], material);
+
+        // Randomly scatter them but keep them away from the center
+        mesh.position.set(
+          (Math.random() - 0.5) * 15,
+          Math.random() * 3,
+          (Math.random() - 0.5) * 15
+        );
+        
+        mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+        scene.add(mesh);
+        primitives.push(mesh);
+      }
+
+      function render(time) {
+        time *= 0.001; // convert time to seconds
+
+        // Resize Logic
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        if (canvas.width !== width || canvas.height !== height) {
+          renderer.setSize(width, height, false);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+        }
+
+        // --- RANDOM MOVEMENT FOR RED LIGHT ---
+        // Using multiple frequencies creates a non-repetitive path
+        pointLight.position.x = Math.sin(time * 0.7) * 5 + Math.cos(time * 0.3) * 2;
+        pointLight.position.y = Math.cos(time * 0.5) * 2 + 3;
+        pointLight.position.z = Math.cos(time * 0.8) * 5 + Math.sin(time * 0.2) * 2;
+        pointHelper.update();
+
+        controls.update(); 
+
+        // Spin the original cubes
+        cubes.forEach((cube, ndx) => {
+          const speed = 1 + ndx * .1;
+          cube.rotation.x = time * speed;
+          cube.rotation.y = time * speed;
+        });
+
+        // Gently rotate the new primitives
+        primitives.forEach((mesh) => {
+          mesh.rotation.y += 0.01;
+        });
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+      }
+      loadGlb();
+      requestAnimationFrame(render);
+    }
+    
+    main();
+  </script>
+
+</body>
+</html>
